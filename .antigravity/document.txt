@@ -1,0 +1,138 @@
+PayRoute
+Intelligent Payment Orchestration Engine
+Project Documentation
+Version 1.0  •  Sam Khera  •  2025
+Java
+Spring Boot
+Kafka
+PostgreSQL
+Redis
+Docker
+Kubernetes
+
+
+
+1. Problem Statement
+Modern digital commerce relies on payment processing infrastructure that must be simultaneously fast, reliable, and fault-tolerant. However, organisations integrating directly with a single payment provider face a fundamental set of challenges:
+
+Single Point of Failure: Dependency on one provider means any outage directly translates to 100% payment downtime, resulting in lost revenue and poor customer experience.
+No Intelligent Routing: Businesses cannot optimise routing based on transaction cost, provider success rates, or geographic performance without a dedicated orchestration layer.
+Duplicate Transaction Risk: Without a robust idempotency mechanism, network timeouts and retries can cause customers to be charged multiple times for the same order.
+Manual Failover: Engineering teams must manually intervene when a provider fails, creating significant operational overhead and delayed recovery windows.
+Lack of Observability: There is no centralised view of transaction health, provider performance, or failure trends across multiple payment processors.
+Scalability Bottlenecks: High-volume transaction periods overwhelm single-threaded or synchronous processing pipelines, causing latency spikes and request drops.
+
+These gaps collectively represent a significant operational and financial risk for any business processing digital payments at scale. A distributed, intelligent orchestration layer is needed to solve these problems in a unified, production-grade system.
+
+2. Purpose
+PayRoute is built to serve as a centralised payment orchestration engine — a middleware layer that sits between an application and multiple payment providers. The core purpose of this project is threefold:
+
+2.1  Eliminate Single Points of Failure
+By integrating 5+ payment providers (Stripe, Razorpay, PayPal, Braintree, Square) and implementing automatic provider fallback, PayRoute ensures that no single provider failure can bring down the entire payment system. Transactions are rerouted seamlessly without any user-facing interruption.
+2.2  Enable Intelligent, Strategy-Driven Routing
+PayRoute applies configurable routing strategies — priority-based, cost-optimised, and success-rate-driven — to dynamically select the most appropriate provider for every transaction. Strategy switching requires no code deployments, enabling runtime reconfiguration.
+2.3  Guarantee Transaction Integrity
+Through Redis-backed idempotency keys, PayRoute ensures that every payment attempt, regardless of retries or network failures, is processed exactly once. This protects both the business and the customer from the risks of duplicate charges.
+2.4  Demonstrate Production-Grade Engineering
+This project showcases end-to-end distributed systems engineering covering event-driven architecture with Apache Kafka, containerised deployment with Docker and Kubernetes, and full observability with Prometheus and Grafana, reflecting real-world enterprise-level practices.
+
+3. Objectives
+The following measurable objectives guide the development and evaluation of PayRoute:
+
+
+#: Objective: Success Metric
+1: Build a distributed payment routing engine with 5+ provider adapters: All adapters functional with mock API simulation
+2: Implement idempotency to prevent duplicate charges: Zero duplicate transactions under retry stress tests
+3: Achieve high availability via automatic provider failover: System continues processing when 1 to 2 providers are offline
+4: Process 50,000+ daily transaction events via Kafka: Load test validates 50K events/day throughput
+5: Maintain system uptime above 99% under concurrent load: JMeter test with 10K concurrent requests shows less than 1% failure rate
+6: Achieve 80%+ unit test coverage across all services: JaCoCo code coverage report confirms threshold
+7: Reduce transaction failure rate by ~40% vs. single-provider baseline: Benchmark comparison with and without fallback routing enabled
+8: Enable full observability via Prometheus and Grafana: Live dashboard showing latency, success rates, and provider health
+9: Deploy entire system via Docker Compose in a single command: docker compose up brings all services online successfully
+10: Implement CI/CD pipeline for automated build and test: GitHub Actions pipeline runs successfully on every commit
+
+4. Scope
+4.1  In Scope
+Design and implementation of a multi-module Spring Boot microservices architecture.
+Payment orchestration logic with at least three pluggable routing strategy implementations.
+Integration with 5 simulated payment provider adapters using mock REST clients.
+Redis-based idempotency layer for guaranteed duplicate transaction prevention.
+Apache Kafka event streaming for all payment lifecycle events (initiated, success, failed, retry).
+PostgreSQL persistence for transactions, providers, routing rules, and event audit logs.
+Retry and fallback logic with configurable provider priority ordering.
+Unit and integration testing using JUnit 5, Mockito, and Testcontainers.
+Performance and load testing using JMeter targeting 10,000 concurrent requests.
+Full Docker Compose setup for local environments covering Kafka, Redis, PostgreSQL, and all services.
+Kubernetes deployment manifests for staging and production target environments.
+Prometheus metrics export and a Grafana operational dashboard.
+GitHub Actions CI/CD pipeline for automated build, test, and Docker image publishing.
+
+4.2  Out of Scope
+Integration with live payment provider production APIs involving real money transactions.
+Frontend UI or merchant-facing dashboard web application.
+PCI-DSS compliance certification (security patterns are followed but formal audit is excluded).
+Multi-tenancy or SaaS productisation of the platform for external customers.
+Mobile SDK or client-side payment libraries for direct consumer use.
+
+4.3  Assumptions and Constraints
+Category: Detail
+Environment: All development and testing performed on local Docker environment
+Providers: Payment providers are simulated with configurable success and failure rates
+Data: No real PII or financial data is used; all test data is fully synthetic
+Infrastructure: Kubernetes deployment targets a single-node local cluster such as Minikube
+Timeline: Full system delivered across a 6-week iterative development cycle
+
+
+5. Technology Stack
+5.1  Core Backend
+Technology: Version: Role
+Java: 21 (LTS): Primary programming language for all services
+Spring Boot: 4.0.4: Application framework and dependency injection container
+Spring Web (MVC): 3.x: REST API layer and inbound request handling
+Spring Data JPA: 3.x: ORM and database abstraction for PostgreSQL
+Spring Kafka: 3.x: Kafka producer and consumer integration
+Spring Data Redis: 3.x: Redis client for idempotency keys and caching
+Lombok: Latest: Boilerplate reduction including getters, builders, and logging
+
+
+5.2  Data and Messaging
+Technology: Role
+PostgreSQL 15: Primary relational database storing transactions, providers, routing rules, and event logs
+Redis 7: Idempotency key storage, response caching, and distributed lock management
+Apache Kafka 3.x: Distributed event streaming platform for all payment lifecycle events
+Apache ZooKeeper: Kafka cluster coordination and distributed metadata management
+
+
+5.3  Infrastructure and DevOps
+Technology: Role
+Docker: Containerisation of all application services for consistent runtime environments
+Docker Compose: Local multi-service orchestration and single-command environment bootstrap
+Kubernetes (Minikube): Container orchestration platform for staging and production deployment
+GitHub Actions: CI/CD pipeline for automated build, test, and Docker image publishing on every commit
+Maven: Build automation, dependency management, and multi-module project structure
+
+
+5.4  Observability and Testing
+Technology: Role
+Prometheus: Metrics collection covering payment counters, latency histograms, and provider health gauges
+Grafana: Real-time dashboard visualisation of all transaction and system metrics
+Spring Actuator: Health check endpoints and Prometheus metrics exposition via /actuator/prometheus
+JUnit 5: Unit testing framework for all service and domain logic
+Mockito: Mocking framework for isolating individual units under test
+Testcontainers: Integration testing using real PostgreSQL, Redis, and Kafka containers
+JMeter: Load and performance testing simulating 10,000 concurrent requests
+OpenTelemetry: Distributed tracing across microservice boundaries for end-to-end visibility
+
+
+6. High-Level Architecture
+PayRoute follows a modular, event-driven microservices architecture composed of four primary service modules:
+
+Module: Responsibility
+api-gateway: Receives inbound payment requests, validates input, and enforces idempotency via Redis before forwarding to the orchestrator service
+orchestrator: Applies the configured routing strategy to select a provider, delegates to the adapter layer, handles retries and automatic fallback on failure, and publishes Kafka lifecycle events
+provider-adapter: Contains one adapter implementation per payment provider, each translating the internal PaymentRequest model into the provider-specific API contract
+event-processor: Consumes Kafka events, updates transaction state in PostgreSQL, schedules retries, and feeds custom metrics to the Prometheus endpoint
+
+
+All modules communicate asynchronously via Apache Kafka for non-blocking event propagation across the system. The orchestrator communicates synchronously with provider adapters to obtain real-time transaction results. Redis provides a shared idempotency and caching layer accessible to both the API gateway and the orchestrator. All services are containerised and orchestrated via Docker Compose locally and Kubernetes in deployed environments.

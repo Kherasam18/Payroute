@@ -1,0 +1,16 @@
+# ============================================================
+# PayRoute — Development Profile Overrides
+# ============================================================
+
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.payroute.orchestrate: DEBUG
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

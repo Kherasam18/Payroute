@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -31,3 +31,18 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### OS Files ###
+.DS_Store
+
+### Build Artifacts ###
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+### Environment & Secrets ###
+.env
+application-prod.yml
+
+### Docker ###
+docker-volumes/
