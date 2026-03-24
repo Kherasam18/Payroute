@@ -1,0 +1,30 @@
+package com.payroute.orchestrate.orchestrator.strategy;
+
+import com.payroute.orchestrate.domain.dto.PaymentRequest;
+import com.payroute.orchestrate.domain.entity.PaymentProvider;
+import com.payroute.orchestrate.domain.exception.AllProvidersFailedException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * Selects the provider with the lowest priority number (highest priority).
+ */
+@Slf4j
+@Component
+public class PriorityRoutingStrategy implements RoutingStrategySelector {
+
+    @Override
+    public PaymentProvider selectProvider(PaymentRequest request, List<PaymentProvider> providers) {
+        PaymentProvider selected = providers.stream()
+                .filter(PaymentProvider::getIsActive)
+                .min(Comparator.comparingInt(PaymentProvider::getPriority))
+                .orElseThrow(() -> new AllProvidersFailedException(
+                        "No active providers available", "NO_ACTIVE_PROVIDERS"));
+
+        log.info("Priority strategy selected: {}", selected.getName());
+        return selected;
+    }
+}
