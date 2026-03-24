@@ -2,6 +2,7 @@ package com.payroute.orchestrate.provideradapter.adapter;
 
 import com.payroute.orchestrate.domain.dto.PaymentRequest;
 import com.payroute.orchestrate.domain.dto.PaymentResponse;
+import com.payroute.orchestrate.domain.enums.ProviderName;
 
 /**
  * Adapter interface that each payment provider must implement.
@@ -25,7 +26,16 @@ public interface PaymentProviderAdapter {
      *
      * @return {@code true} if the provider is reachable and operational
      */
-    // TODO: Implement health check logic (e.g., ping provider endpoint)
     boolean isHealthy();
+
+    /**
+     * Returns the provider name this adapter is responsible for.
+     * Overridden by concrete adapters to identify themselves.
+     *
+     * @return the {@link ProviderName}, or {@code null} if not set
+     */
+    default ProviderName getProviderName() {
+        return null;
+    }
 }
 
